@@ -1,14 +1,13 @@
 package com.jenjen.ktor
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.jenjen.ktor.database.DatabaseFactory
+import com.jenjen.ktor.route.registerCustomerRoute
 import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
 import io.ktor.features.*
-import org.slf4j.event.*
-import io.ktor.routing.*
-import io.ktor.http.*
-import com.fasterxml.jackson.databind.*
 import io.ktor.jackson.*
+import io.ktor.request.*
+import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -26,14 +25,8 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
+    registerCustomerRoute()
+    DatabaseFactory.init()
 
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
-        }
-    }
 }
 

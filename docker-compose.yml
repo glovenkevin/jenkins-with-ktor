@@ -1,0 +1,15 @@
+version: 2.4
+
+services:
+  jenkins:
+    build:
+      dockerfile: jenkins.dockerfile
+    container_name: jenkins
+    ports:
+      - 8000:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - jenkinsHome:/var/jenkins_home
+
+volumes:
+  jenkinsHome:
