@@ -2,11 +2,13 @@ package com.jenjen.ktor
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.jenjen.ktor.database.DatabaseFactory
-import com.jenjen.ktor.route.registerCustomerRoute
+import com.jenjen.ktor.route.registerRoute
+import com.jenjen.ktor.service.bindServices
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.request.*
+import org.kodein.di.ktor.di
 import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -25,8 +27,12 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    registerCustomerRoute()
+    registerRoute()
     DatabaseFactory.init()
+
+    di {
+        bindServices()
+    }
 
 }
 

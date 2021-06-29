@@ -1,54 +1,49 @@
 package com.jenjen.ktor.route
 
 import com.jenjen.ktor.Response.Response
+import com.jenjen.ktor.entity.CustomerEntity
 import com.jenjen.ktor.models.Customer
+import com.jenjen.ktor.service.CustomerService
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-
-val customerStorage = mutableListOf<Customer>()
+import org.kodein.di.instance
+import org.kodein.di.ktor.di
 
 fun Route.customerRouting() {
+
+    val customerService by di().instance<CustomerService>()
+
     route("customer") {
         get {
-            if (customerStorage.isNotEmpty()) {
-                val rtn = Response(200, customerStorage)
-                call.respond(rtn)
-            } else {
-                val rtn = Response(200, "No Customer Found")
-                call.respond(rtn)
-            }
+            val listCustomer = customerService.getAllCustomer()
+            val rtn = Response(200, listCustomer)
+            call.respond(rtn)
         }
         get("{id}") {
-            val id = call.parameters["id"] ?: return@get call.respondText(
-                "Missing or malformed id",
-                status = HttpStatusCode.BadRequest
-            )
-
-            val customer = customerStorage.find { it.id == id } ?: return@get call.respondText(
-                "No customer with id $id",
-                status = HttpStatusCode.NotFound
-            )
-
-            val rtn = Response(200, customer)
+            val id = call.parameters["id"]
+            if (id.isNullOrEmpty()) {
+                return@get call.respond(Response(200, "Malform id"))
+            }
+            val rtn = customerService.getCustomer(id)
             call.respond(rtn)
         }
         post {
             val customer = call.receive<Customer>()
-            customerStorage.add(customer)
+            customerService.insertCustomer(customer)
             val rtn = Response(200, "Customer added successfully")
             call.respond(rtn)
         }
         delete ("{id}") {
-
+            val id = call.parameters["id"]
+            if (id.isNullOrEmpty()) {
+                return@delete call.respond(Response(200, "Malform id"))
+            }
+            customerService.deleteCustomer(id)
+            val rtn = Response(200, "Customer removed successfully")
+            call.respond(rtn)
         }
-    }
-}
-
-fun Application.registerCustomerRoute() {
-    routing {
-        customerRouting()
     }
 }
