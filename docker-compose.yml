@@ -1,15 +1,29 @@
 version: 2.4
 
 services:
-  jenkins:
-    build:
-      dockerfile: jenkins.dockerfile
-    container_name: jenkins
+#  jenkins:
+#    build:
+#      dockerfile: jenkins.dockerfile
+#    container_name: jenkins
+#    ports:
+#      - 8000:8080
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - jenkinsHome:/var/jenkins_home
+
+  db:
+    image: mysql:8.0.25
+    container_name: mysql
     ports:
-      - 8000:8080
+      - 3306:3306
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - jenkinsHome:/var/jenkins_home
+      - mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: ktor
+      MYSQL_USER: developer
+      MYSQL_PASSWORD: developer
 
 volumes:
   jenkinsHome:
+  mysql:
