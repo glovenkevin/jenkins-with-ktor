@@ -16,13 +16,13 @@ fun Route.customerRouting() {
 
     val customerService by di().instance<CustomerService>()
 
-    route("customer") {
+    route("/customer") {
         get {
             val listCustomer = customerService.getAllCustomer()
             val rtn = Response(200, listCustomer)
             call.respond(rtn)
         }
-        get("{id}") {
+        get("/{id}") {
             val id = call.parameters["id"]
             if (id.isNullOrEmpty()) {
                 return@get call.respond(Response(200, "Malform id"))
@@ -30,13 +30,13 @@ fun Route.customerRouting() {
             val rtn = customerService.getCustomer(id)
             call.respond(rtn)
         }
-        post {
+        post("/insert") {
             val customer = call.receive<Customer>()
             customerService.insertCustomer(customer)
             val rtn = Response(200, "Customer added successfully")
             call.respond(rtn)
         }
-        delete ("{id}") {
+        delete ("/{id}") {
             val id = call.parameters["id"]
             if (id.isNullOrEmpty()) {
                 return@delete call.respond(Response(200, "Malform id"))
